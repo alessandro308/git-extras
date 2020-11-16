@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+current_branch() {
+    git rev-parse --abbrev-ref HEAD
+}
+
+usage() {
+    echo "Usage: git merge-into-remote dest"
+}
+
+cur_branch=$(current_branch)
+
+stashed=0
+if [ -z "$(git status --porcelain)" ];
+then
+   echo "git status clean, proceding"
+else
+    echo "Local modifications detected, stashing"
+    stashed=1
+    git stash
+fi
+
+
+git checkout "$1"
+git pull --no-edit origin HEAD
+git merge --no-edit --no-ff "$cur_branch" "$1"
+if [ $? -eq 1 ];
+then
+  echo 'Merge conflict detected. Aborting'
+  git merge --abort
+else
+  git push --no-verify origin HEAD && git checkout "$cur_branch"
+fi
+
+if [ $stashed -eq 1 ];
+then
+    git stash pop;
+fi
