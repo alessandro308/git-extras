@@ -18,7 +18,7 @@ usage() {
 
 function executFindStoryOp () {
     actual=$(pwd)
-    eval find -L . -name ".git" -maxdepth 2 | while read line; do
+    eval find -L . -name ".git" -maxdepth 4 | while read line; do
       gitrepodir=${line::${#line}-5} # cut the .git part of find results to have the root git directory of that repository
       eval cd "\"$gitrepodir\"" # into git repo location
       curdir=$(pwd)

@@ -138,7 +138,7 @@ function executBulkOp () {
     eval cd "\"$rwsdir\""
     local actual=$(pwd)
     echo "Executing bulk operation in workspace ${inverse}$actual${reset}"
-    eval find -L . -name ".git" -maxdepth 3 | while read line; do
+    eval find -L . -name ".git" -maxdepth 4 | while read line; do
       local gitrepodir=${line::${#line}-5} # cut the .git part of find results to have the root git directory of that repository
       eval cd "\"$gitrepodir\"" # into git repo location
       local curdir=$(pwd)
