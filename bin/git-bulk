@@ -8,6 +8,7 @@ bldred=${txtbld}$(tput setaf 1)
 guardedmode=false
 singlemode=false
 allwsmode=false
+parallel=false
 
 #
 # print usage message
@@ -63,7 +64,12 @@ function guardedExecution () {
     read -n 1 -r </dev/tty; echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then atomicExecution "$@"; fi
   else
-     atomicExecution "$@"
+     if $parallel; then
+       atomicExecution "$@" &2> /dev/null;
+       sleep 0.1
+     else
+       atomicExecution "$@";
+     fi
   fi
 }
 
@@ -132,7 +138,7 @@ function executBulkOp () {
     eval cd "\"$rwsdir\""
     local actual=$(pwd)
     echo "Executing bulk operation in workspace ${inverse}$actual${reset}"
-    eval find -L . -name ".git" | while read line; do
+    eval find -L . -name ".git" -maxdepth 3 | while read line; do
       local gitrepodir=${line::${#line}-5} # cut the .git part of find results to have the root git directory of that repository
       eval cd "\"$gitrepodir\"" # into git repo location
       local curdir=$(pwd)
@@ -160,6 +166,8 @@ while [ "${#}" -ge 1 ] ; do
       allwsmode=true ;;
     -g)
       guardedmode=true ;;
+    --parallel)
+      parallel=true ;;
     -w)
       singlemode=true && shift && wsname="$1" && checkWSName ;;
     -*)

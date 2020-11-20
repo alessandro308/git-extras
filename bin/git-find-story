@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+inverse=$(tput rev)
+reset=$(tput sgr0)
+txtbld=$(tput bold)
+bldred=${txtbld}$(tput setaf 1)
+
+
+#
+# print usage message
+#
+usage() {
+  echo 1>&2 "usage: git find-story US-0001"
+  echo 1>&2 " it search in all sub-directory branches"
+  echo 1>&2 " containing the story number (e.g. US-0001)"
+  echo 1>&2 " if branch is found, the repo name is printed"
+}
+
+
+function executFindStoryOp () {
+    actual=$(pwd)
+    echo "Searching story in ${inverse}${pwd}${reset} $1"
+    eval find -L . -name ".git" -maxdepth 2 | while read line; do
+      gitrepodir=${line::${#line}-5} # cut the .git part of find results to have the root git directory of that repository
+      eval cd "\"$gitrepodir\"" # into git repo location
+      curdir=$(pwd)
+      leadingpath=${curdir#${actual}}
+      git branch -a | grep "$@" > /dev/null
+      if [ $? -eq 0 ];
+      then
+        echo ${curdir##*/};
+      fi
+      eval cd "\"$actual\"" # back to origin location of last find command
+    done
+}
+
+paramcount="${#}"
+
+# if no arguments show usage
+if [[ $paramcount -le 0 ]]; then usage; fi
+
+# parse command parameters
+case "$1" in
+  --help|-h)
+    usage && exit 1 ;;
+esac
+
+# pass the origin arguments to the 'executBulkOp'
+executFindStoryOp $@
