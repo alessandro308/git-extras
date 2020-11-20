@@ -14,7 +14,7 @@ parallel=false
 # print usage message
 #
 usage() {
-  echo 1>&2 "usage: git bulk [-g] ([-a]|[-w <ws-name>]) <git command>"
+  echo 1>&2 "usage: git bulk [-g|-p] ([-a]|[-w <ws-name>]) <git command>"
   echo 1>&2 "       git bulk --addworkspace <ws-name> <ws-root-directory> (--from <URL or file>)"
   echo 1>&2 "       git bulk --removeworkspace <ws-name>"
   echo 1>&2 "       git bulk --addcurrent <ws-name>"
@@ -166,7 +166,7 @@ while [ "${#}" -ge 1 ] ; do
       allwsmode=true ;;
     -g)
       guardedmode=true ;;
-    --parallel)
+    -p)
       parallel=true ;;
     -w)
       singlemode=true && shift && wsname="$1" && checkWSName ;;
