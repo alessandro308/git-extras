@@ -23,8 +23,8 @@ function executFindStoryOp () {
       eval cd "\"$gitrepodir\"" # into git repo location
       curdir=$(pwd)
       leadingpath=${curdir#${actual}}
-      git branch -a | grep "$@" > /dev/null
-      if [ $? -eq 0 ];
+      res=$(git log --grep "$@" --all -n 1 --since=2.months.ago 2> /dev/null | wc -l)
+      if [ $res -gt 0 ];
       then
         echo ${curdir##*/};
       fi
