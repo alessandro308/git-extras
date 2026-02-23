@@ -21,7 +21,7 @@ else
 fi
 
 
-git checkout "$1"
+git checkout "$1" || { echo "Failed to checkout '$1'. Aborting."; [ $stashed -eq 1 ] && git stash pop; exit 1; }
 git pull --no-edit origin "$1"
 git merge --no-edit --no-ff "$cur_branch" "$1"
 if [ $? -eq 1 ];
